@@ -32,7 +32,12 @@ public class UnitController : MonoBehaviour
 
     public void selectUnit(Unit unit)
     {
+        if(selectedUnit != null)
+        {
+            selectedUnit.Deselect();
+        }
         selectedUnit = unit;
+        unit.Select();
     }
 
 }
