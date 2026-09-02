@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
     {
         tileController.initialize();
         unitController.CreateUnit(1, 1);
+        unitController.CreateUnit(2, 2);
     }
 
     // Update is called once per frame
