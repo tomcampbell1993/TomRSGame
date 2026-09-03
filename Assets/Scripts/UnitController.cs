@@ -7,10 +7,15 @@ public class UnitController : MonoBehaviour
 
     public GameObject unitPrefab;
     public TileController tileController;
+    public Pathfinder pathfinder;
     public List<GameObject> units = new List<GameObject>();
     public Unit selectedUnit;
     void Start()
     {
+        Tile startTile = tileController.GetTile(1, 1);
+        Tile targetTile = tileController.GetTile(6, 6);
+
+        pathfinder.FindPath(startTile, targetTile);
     }
 
     void Update()

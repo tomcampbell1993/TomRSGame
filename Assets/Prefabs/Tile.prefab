@@ -126,4 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tile
   x: 0
-  y: 0
+  z: 0
+  tiletype: 0
+  groundMaterial: {fileID: 2100000, guid: 3d20e46b853bde14f9eacdb3488c2cff, type: 2}
+  waterMaterial: {fileID: 2100000, guid: 9be7a5b81e87a90468a1a42dcbb93a66, type: 2}
