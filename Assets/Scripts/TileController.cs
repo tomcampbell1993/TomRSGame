@@ -38,6 +38,17 @@ public class TileController : MonoBehaviour
                 tile.z = z;
 
                 tile.name = $"Tile_{x}_{z}";
+
+                if ((x == 2 && z <= 5) || (x == 5 && z >= 2))
+                {
+                    tile.Initialize(Tile.TileType.Water);
+                }
+                
+                else
+                {
+                    tile.Initialize(Tile.TileType.Ground);
+                }
+
                 tile.transform.localPosition = new Vector3(x * tileSize, 0 , z * tileSize);
 
                 tiles[x, z] = tile;

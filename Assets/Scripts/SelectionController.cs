@@ -28,6 +28,16 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
             if(Physics.Raycast(ray, out RaycastHit hit))
             {
+                Tile clickedTile = hit.collider.GetComponent<Tile>();
+                if(clickedTile == null)
+                {
+                    return;
+                }
+                if (!clickedTile.walkable)
+                {
+                    return;
+                }
+
                 unitController.selectedUnit.MoveTo(hit.point);
             }
         }
