@@ -21,13 +21,27 @@ public class Pathfinder : MonoBehaviour
         List<Tile> openList = new List<Tile>();
         List<Tile> closedList = new List<Tile>();
 
+        foreach (Tile tile in tileController.allTiles)
+        {
+            tile.g = Mathf.Infinity;
+            tile.h = 0;
+            tile.f = Mathf.Infinity;
+            tile.cameFrom = null;
+
+        }
+
         // g is accumulated movement cost from the start tile to this tile
         // h heuristic estimated distance between current tile and target tile
         // f is total cost of the node
 
         int[,] offsets = { { -1, -1 }, { 0, -1 }, { +1, -1 }, { +1, 0 }, { +1, +1 }, { 0, +1 }, { -1, +1 }, { -1, 0 } };
+
         Tile currentTile = startTile;
+
         currentTile.g = 0;
+        currentTile.h = Mathf.Sqrt(Mathf.Pow(currentTile.x - targetTile.x, 2) + Mathf.Pow(currentTile.z - targetTile.z, 2));
+        currentTile.f = currentTile.g + currentTile.h;
+
         openList.Add(currentTile);
 
         while (openList.Count > 0)
@@ -53,10 +67,11 @@ public class Pathfinder : MonoBehaviour
 
                 Tile reverseTile = currentTile;
 
-                while(reverseTile.cameFrom != null)
+                while (reverseTile != null)
                 {
-                    reverseTile = reverseTile.cameFrom;
                     path.Add(reverseTile);
+                    reverseTile = reverseTile.cameFrom;
+
                 }
 
                 path.Reverse();

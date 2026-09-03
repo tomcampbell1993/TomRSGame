@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+
 
 public class TileController : MonoBehaviour
 {
@@ -7,6 +9,7 @@ public class TileController : MonoBehaviour
     public int width;
     public int height;
     public float tileSize;
+    public List<Tile> allTiles = new List<Tile>();
 
     private Tile[,] tiles;
 
@@ -52,6 +55,7 @@ public class TileController : MonoBehaviour
                 tile.transform.localPosition = new Vector3(x * tileSize, 0, z * tileSize);
 
                 tiles[x, z] = tile;
+                allTiles.Add(tile);
             }
         }
     }

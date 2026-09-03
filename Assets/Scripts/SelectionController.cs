@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
+
 
 public class NewMonoBehaviourScript : MonoBehaviour
 {
@@ -38,7 +40,18 @@ public class NewMonoBehaviourScript : MonoBehaviour
                     return;
                 }
 
-                unitController.selectedUnit.MoveTo(hit.point);
+                Unit unit = unitController.selectedUnit;
+
+                Tile startTile = unit.currentTile;
+                Tile targetTile = clickedTile;
+
+                List<Tile> path = unitController.pathfinder.FindPath(startTile, targetTile);
+
+                if(path != null)
+                {
+                    unit.FollowPath(path);
+                }
+
             }
         }
     }
