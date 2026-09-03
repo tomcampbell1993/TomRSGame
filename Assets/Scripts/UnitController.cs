@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -12,10 +11,7 @@ public class UnitController : MonoBehaviour
     public Unit selectedUnit;
     void Start()
     {
-        Tile startTile = tileController.GetTile(1, 1);
-        Tile targetTile = tileController.GetTile(6, 6);
 
-        pathfinder.FindPath(startTile, targetTile);
     }
 
     void Update()
@@ -31,6 +27,7 @@ public class UnitController : MonoBehaviour
         Unit unitScript = unit.GetComponent<Unit>();
         unitScript.unitController = this;
 
+        unitScript.currentTile = targetTile;
         unit.transform.position = targetTile.transform.position + Vector3.up;
         units.Add(unit);
     }

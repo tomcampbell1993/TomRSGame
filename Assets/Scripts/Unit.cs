@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Unit : MonoBehaviour
 {
@@ -6,9 +7,11 @@ public class Unit : MonoBehaviour
     public UnitController unitController;
     public bool selected = false;
     public float moveSpeed;
+    public Tile currentTile;
+    public List<Tile> currentPath;
 
     private bool isMoving = false;
-    private Vector3 targetPosition;
+    private int pathIndex = 0;
     void Start()
     {
 
@@ -26,23 +29,39 @@ public class Unit : MonoBehaviour
 
     private void Movement()
     {
-        if(!isMoving)
+        if (!isMoving)
         {
             return;
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+        Tile targetTile = currentPath[pathIndex];
 
-        if (transform.position == targetPosition)
+        transform.position = Vector3.MoveTowards(transform.position, targetTile.transform.position + Vector3.up, moveSpeed * Time.deltaTime);
+
+        if (transform.position == targetTile.transform.position + Vector3.up)
         {
-            isMoving = false;
+            currentTile = targetTile;
+
+            if (pathIndex == currentPath.Count - 1)
+            {
+                isMoving = false;
+                return;
+            }
+            pathIndex++;
+
         }
     }
 
-    public void MoveTo(Vector3 position)
+    public void FollowPath(List<Tile> path)
     {
-        targetPosition = position;
         isMoving = true;
+        pathIndex = 1;
+        currentPath = path;
+
+        foreach (Tile tile in path)
+        {
+            Debug.Log("unit is moving to " + tile);
+        }
     }
 
     public void Select()
