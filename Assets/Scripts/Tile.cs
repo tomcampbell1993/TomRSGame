@@ -11,6 +11,7 @@ public class Tile : MonoBehaviour
     public float h;
     public float f;
     public int movementCost;
+    public Tile cameFrom = null;
     public enum TileType
     {
         Ground,

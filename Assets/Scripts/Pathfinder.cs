@@ -16,7 +16,7 @@ public class Pathfinder : MonoBehaviour
 
     }
 
-    public void FindPath(Tile startTile, Tile targetTile)
+    public List<Tile> FindPath(Tile startTile, Tile targetTile)
     {
         List<Tile> openList = new List<Tile>();
         List<Tile> closedList = new List<Tile>();
@@ -44,12 +44,23 @@ public class Pathfinder : MonoBehaviour
             openList.Remove(lowestF);
             closedList.Add(lowestF);
             currentTile = lowestF;
-            //Debug.Log(currentTile.name);
 
             if (currentTile == targetTile)
             {
-                Debug.Log(closedList);
-                break;
+                Debug.Log("Target found!");
+
+                List<Tile> path = new List<Tile>();
+
+                Tile reverseTile = currentTile;
+
+                while(reverseTile.cameFrom != null)
+                {
+                    reverseTile = reverseTile.cameFrom;
+                    path.Add(reverseTile);
+                }
+
+                path.Reverse();
+                return path;
             }
 
             Tile[] adjacentTiles = new Tile[8];
@@ -92,6 +103,7 @@ public class Pathfinder : MonoBehaviour
                     {
                         adjacentTiles[i].g = newG;
                         adjacentTiles[i].f = newG + adjacentTiles[i].h;
+                        adjacentTiles[i].cameFrom = currentTile;
                     }
                 }
                 else
@@ -99,10 +111,11 @@ public class Pathfinder : MonoBehaviour
                     adjacentTiles[i].g = newG;
                     adjacentTiles[i].h = Mathf.Sqrt(Mathf.Pow((adjacentTiles[i].x - targetTile.x), 2) + Mathf.Pow((adjacentTiles[i].z - targetTile.z), 2));
                     adjacentTiles[i].f = adjacentTiles[i].g + adjacentTiles[i].h;
+                    adjacentTiles[i].cameFrom = currentTile;
                     openList.Add(adjacentTiles[i]);
                 }
             }
         }
-
+        return null;
     }
 }

@@ -14,8 +14,6 @@ public class UnitController : MonoBehaviour
     {
         Tile startTile = tileController.GetTile(1, 1);
         Tile targetTile = tileController.GetTile(6, 6);
-        Debug.Log("start" +  startTile.name);
-        Debug.Log("target" + targetTile.name);
 
         pathfinder.FindPath(startTile, targetTile);
     }
