@@ -8,12 +8,12 @@ public class Pathfinder : MonoBehaviour
 
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+
     }
 
     public void FindPath(Tile startTile, Tile targetTile)
@@ -21,35 +21,87 @@ public class Pathfinder : MonoBehaviour
         List<Tile> openList = new List<Tile>();
         List<Tile> closedList = new List<Tile>();
 
-        // g is distance between current tile and start tile
+        // g is accumulated movement cost from the start tile to this tile
         // h heuristic estimated distance between current tile and target tile
         // f is total cost of the node
 
         int[,] offsets = { { -1, -1 }, { 0, -1 }, { +1, -1 }, { +1, 0 }, { +1, +1 }, { 0, +1 }, { -1, +1 }, { -1, 0 } };
+        Tile currentTile = startTile;
+        currentTile.g = 0;
+        openList.Add(currentTile);
 
-        Tile[] adjacentTiles = new Tile[8];
-        for(int i = 0; i< 8; i++)
+        while (openList.Count > 0)
         {
-            int x = startTile.x + offsets[i, 0];
-            int z = startTile.z + offsets[i, 1];
-            adjacentTiles[i] = tileController.GetTile(x, z);
-        }
-        
-        for(int i = 0;i< 8; i++)
-        {
-            if( adjacentTiles[i] == null)
+
+            Tile lowestF = openList[0];
+            for (int i = 1; i < openList.Count; i++)
             {
-                continue;
+                if (openList[i].f < lowestF.f)
+                {
+                    lowestF = openList[i];
+                }
+            }
+            openList.Remove(lowestF);
+            closedList.Add(lowestF);
+            currentTile = lowestF;
+            //Debug.Log(currentTile.name);
+
+            if (currentTile == targetTile)
+            {
+                Debug.Log(closedList);
+                break;
             }
 
-            if(!adjacentTiles[i].walkable)
+            Tile[] adjacentTiles = new Tile[8];
+            for (int i = 0; i < 8; i++)
             {
-                continue;
+                int x = currentTile.x + offsets[i, 0];
+                int z = currentTile.z + offsets[i, 1];
+                adjacentTiles[i] = tileController.GetTile(x, z);
             }
 
-            adjacentTiles[i].g = Mathf.Pow((adjacentTiles[i].x - startTile.x),2) + Mathf.Pow((adjacentTiles[i].z - startTile.z),2) + adjacentTiles[i].movementCost;
-            adjacentTiles[i].h = Mathf.Pow((adjacentTiles[i].x - targetTile.x), 2) + Mathf.Pow((adjacentTiles[i].z - targetTile.z), 2);
-            adjacentTiles[i].f = adjacentTiles[i].g + adjacentTiles[i].h;
+            for (int i = 0; i < 8; i++)
+            {
+                if (adjacentTiles[i] == null)
+                {
+                    continue;
+                }
+
+                if (closedList.Contains(adjacentTiles[i]))
+                {
+                    continue;
+                }
+
+                if (!adjacentTiles[i].walkable)
+                {
+                    continue;
+                }
+
+                float diagonalMultiplier = 1f;
+
+                if (offsets[i, 0] != 0 && offsets[i, 1] != 0)
+                {
+                    diagonalMultiplier = Mathf.Sqrt(2);
+                }
+
+                float newG = currentTile.g + (adjacentTiles[i].movementCost * diagonalMultiplier);
+
+                if (openList.Contains(adjacentTiles[i]))
+                {
+                    if (newG < adjacentTiles[i].g)
+                    {
+                        adjacentTiles[i].g = newG;
+                        adjacentTiles[i].f = newG + adjacentTiles[i].h;
+                    }
+                }
+                else
+                {
+                    adjacentTiles[i].g = newG;
+                    adjacentTiles[i].h = Mathf.Sqrt(Mathf.Pow((adjacentTiles[i].x - targetTile.x), 2) + Mathf.Pow((adjacentTiles[i].z - targetTile.z), 2));
+                    adjacentTiles[i].f = adjacentTiles[i].g + adjacentTiles[i].h;
+                    openList.Add(adjacentTiles[i]);
+                }
+            }
         }
 
     }

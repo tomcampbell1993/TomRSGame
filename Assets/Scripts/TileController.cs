@@ -12,7 +12,7 @@ public class TileController : MonoBehaviour
 
     void Start()
     {
-        
+
     }
 
     public void initialize()
@@ -43,22 +43,29 @@ public class TileController : MonoBehaviour
                 {
                     tile.Initialize(Tile.TileType.Water);
                 }
-                
+
                 else
                 {
                     tile.Initialize(Tile.TileType.Ground);
                 }
 
-                tile.transform.localPosition = new Vector3(x * tileSize, 0 , z * tileSize);
+                tile.transform.localPosition = new Vector3(x * tileSize, 0, z * tileSize);
 
                 tiles[x, z] = tile;
             }
-        } 
+        }
     }
 
     public Tile GetTile(int x, int z)
     {
-        return tiles[x, z];
+        if (x < 0 || x >= width || z < 0 || z >= height)
+        {
+            return null;
+        }
+        else
+        {
+            return tiles[x, z];
+        }           
     }
 
 }
