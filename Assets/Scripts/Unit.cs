@@ -35,7 +35,7 @@ public class Unit : MonoBehaviour
             return;
         }
 
-        if (pathIndex < currentPath.Count -1)
+        if (pathIndex < currentPath.Count)
         {
 
             Tile targetTile = currentPath[pathIndex];
@@ -50,7 +50,8 @@ public class Unit : MonoBehaviour
         }
         else
         {
-            MoveToPoint(targetPoint);
+            isMoving = false;
+            //MoveToPoint(targetPoint);
         }
     }
 
