@@ -6,16 +6,6 @@ public class Pathfinder : MonoBehaviour
 
     public TileController tileController;
 
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
-    }
-
     public List<Tile> FindPath(Tile startTile, Tile targetTile)
     {
         List<Tile> openList = new List<Tile>();
@@ -39,7 +29,7 @@ public class Pathfinder : MonoBehaviour
         Tile currentTile = startTile;
 
         currentTile.g = 0;
-        currentTile.h = Mathf.Sqrt(Mathf.Pow(currentTile.x - targetTile.x, 2) + Mathf.Pow(currentTile.z - targetTile.z, 2));
+        currentTile.h = CalculateHeuristic(currentTile, targetTile);
         currentTile.f = currentTile.g + currentTile.h;
 
         openList.Add(currentTile);
@@ -61,8 +51,6 @@ public class Pathfinder : MonoBehaviour
 
             if (currentTile == targetTile)
             {
-                Debug.Log("Target found!");
-
                 List<Tile> path = new List<Tile>();
 
                 Tile reverseTile = currentTile;
@@ -71,9 +59,7 @@ public class Pathfinder : MonoBehaviour
                 {
                     path.Add(reverseTile);
                     reverseTile = reverseTile.cameFrom;
-
                 }
-
                 path.Reverse();
                 return path;
             }
@@ -124,7 +110,7 @@ public class Pathfinder : MonoBehaviour
                 else
                 {
                     adjacentTiles[i].g = newG;
-                    adjacentTiles[i].h = Mathf.Sqrt(Mathf.Pow((adjacentTiles[i].x - targetTile.x), 2) + Mathf.Pow((adjacentTiles[i].z - targetTile.z), 2));
+                    adjacentTiles[i].h = CalculateHeuristic(adjacentTiles[i], targetTile);
                     adjacentTiles[i].f = adjacentTiles[i].g + adjacentTiles[i].h;
                     adjacentTiles[i].cameFrom = currentTile;
                     openList.Add(adjacentTiles[i]);
@@ -132,5 +118,85 @@ public class Pathfinder : MonoBehaviour
             }
         }
         return null;
+    }
+
+    private float CalculateHeuristic(Tile currentTile, Tile targetTile)
+    {
+        float xDistance = currentTile.x - targetTile.x;
+        float zDistance = currentTile.z - targetTile.z;
+
+        return Mathf.Sqrt(xDistance * xDistance + zDistance * zDistance);
+    }
+
+    public bool HasClearPath(Tile startTile, Tile targetTile)
+    {
+
+        if (startTile == targetTile)
+        {
+            return true;
+        }
+
+        int x0 = startTile.x;
+        int z0 = startTile.z;
+
+        int x1 = targetTile.x;
+        int z1 = targetTile.z;
+
+        int dx = x1 - x0;
+        int dz = z1 - z0;
+
+        int steps = Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dz));
+
+        float xStep = dx / (float)steps;
+        float zStep = dz / (float)steps;
+
+        float x = x0;
+        float z = z0;
+
+        for (int i = 0; i <= steps; i++)
+        {
+            int tileX = Mathf.RoundToInt(x);
+            int tileZ = Mathf.RoundToInt(z);
+
+            Tile tile = tileController.GetTile(tileX, tileZ);
+
+            if (tile == null || !tile.walkable)
+            {
+                return false;
+            }
+
+            x += xStep;
+            z += zStep;
+        }
+        return true;
+    }
+
+    public List<Tile> SmoothPath(List<Tile> path)
+    {
+        List<Tile> smoothPath = new List<Tile>();
+
+        int currentIndex = 0;
+
+        smoothPath.Add(path[currentIndex]);
+
+        while (currentIndex < path.Count - 1)
+        {
+            int furthestIndex = currentIndex + 1;
+
+            for (int i = currentIndex + 1; i < path.Count; i++)
+            {
+                if (HasClearPath(path[currentIndex], path[i]))
+                {
+                    furthestIndex = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            smoothPath.Add(path[furthestIndex]);
+            currentIndex = furthestIndex;
+        }
+        return smoothPath;
     }
 }
