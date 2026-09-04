@@ -41,6 +41,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
                 }
 
                 Unit unit = unitController.selectedUnit;
+                unit.targetPoint = new Vector3(hit.point.x, 1.0f, hit.point.z);
 
                 Tile startTile = unit.currentTile;
                 Tile targetTile = clickedTile;
@@ -49,6 +50,8 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
                 if(path != null)
                 {
+                    path = unitController.pathfinder.SmoothPath(path);
+
                     unit.FollowPath(path);
                 }
 

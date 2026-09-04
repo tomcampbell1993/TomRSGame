@@ -9,6 +9,7 @@ public class Unit : MonoBehaviour
     public float moveSpeed;
     public Tile currentTile;
     public List<Tile> currentPath;
+    public Vector3 targetPoint;
 
     private bool isMoving = false;
     private int pathIndex = 0;
@@ -34,21 +35,22 @@ public class Unit : MonoBehaviour
             return;
         }
 
-        Tile targetTile = currentPath[pathIndex];
-
-        transform.position = Vector3.MoveTowards(transform.position, targetTile.transform.position + Vector3.up, moveSpeed * Time.deltaTime);
-
-        if (transform.position == targetTile.transform.position + Vector3.up)
+        if (pathIndex < currentPath.Count -1)
         {
-            currentTile = targetTile;
 
-            if (pathIndex == currentPath.Count - 1)
+            Tile targetTile = currentPath[pathIndex];
+
+            transform.position = Vector3.MoveTowards(transform.position, targetTile.transform.position + Vector3.up, moveSpeed * Time.deltaTime);
+
+            if (transform.position == targetTile.transform.position + Vector3.up)
             {
-                isMoving = false;
-                return;
+                currentTile = targetTile;
+                pathIndex++;
             }
-            pathIndex++;
-
+        }
+        else
+        {
+            MoveToPoint(targetPoint);
         }
     }
 
@@ -57,10 +59,16 @@ public class Unit : MonoBehaviour
         isMoving = true;
         pathIndex = 1;
         currentPath = path;
+    }
 
-        foreach (Tile tile in path)
+    public void MoveToPoint(Vector3 point)
+    {
+        transform.position = Vector3.MoveTowards(transform.position, point, moveSpeed * Time.deltaTime);
+
+        if(transform.position == point)
         {
-            Debug.Log("unit is moving to " + tile);
+            isMoving = false;
+            return;
         }
     }
 
