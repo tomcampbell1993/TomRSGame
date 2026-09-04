@@ -93,6 +93,10 @@ public class Pathfinder : MonoBehaviour
 
                 if (offsets[i, 0] != 0 && offsets[i, 1] != 0)
                 {
+                    if (!CanMoveDiagonally(currentTile, offsets[i, 0], offsets[i, 1]))
+                    {
+                        continue;
+                    }
                     diagonalMultiplier = Mathf.Sqrt(2);
                 }
 
@@ -130,45 +134,66 @@ public class Pathfinder : MonoBehaviour
 
     public bool HasClearPath(Tile startTile, Tile targetTile)
     {
-
-        if (startTile == targetTile)
-        {
-            return true;
-        }
-
         int x0 = startTile.x;
         int z0 = startTile.z;
 
         int x1 = targetTile.x;
         int z1 = targetTile.z;
 
-        int dx = x1 - x0;
-        int dz = z1 - z0;
+        int dx = Mathf.Abs(x1 - x0);
+        int dz = Mathf.Abs(z1 - z0);
 
-        int steps = Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dz));
+        int xStep = x0 < x1 ? 1 : -1;
+        int zStep = z0 < z1 ? 1 : -1;
 
-        float xStep = dx / (float)steps;
-        float zStep = dz / (float)steps;
+        int x = x0;
+        int z = z0;
 
-        float x = x0;
-        float z = z0;
+        int error = dx - dz;
 
-        for (int i = 0; i <= steps; i++)
+        while (true)
         {
-            int tileX = Mathf.RoundToInt(x);
-            int tileZ = Mathf.RoundToInt(z);
-
-            Tile tile = tileController.GetTile(tileX, tileZ);
+            Tile tile = tileController.GetTile(x, z);
 
             if (tile == null || !tile.walkable)
             {
                 return false;
             }
 
-            x += xStep;
-            z += zStep;
+            if (x == x1 && z == z1)
+            {
+                return true;
+            }
+
+            int previousX = x;
+            int previousZ = z;
+
+            int error2 = 2 * error;
+
+            if (error2 > -dz)
+            {
+                error -= dz;
+                x += xStep;
+            }
+
+            if (error2 < dx)
+            {
+                error += dx;
+                z += zStep;
+            }
+
+            // If we moved diagonally, make sure we aren't
+            // cutting through the corner of an obstacle.
+            if (x != previousX && z != previousZ)
+            {
+                Tile previousTile = tileController.GetTile(previousX, previousZ);
+
+                if (!CanMoveDiagonally(previousTile, xStep, zStep))
+                {
+                    return false;
+                }
+            }
         }
-        return true;
     }
 
     public List<Tile> SmoothPath(List<Tile> path)
@@ -198,5 +223,17 @@ public class Pathfinder : MonoBehaviour
             currentIndex = furthestIndex;
         }
         return smoothPath;
+    }
+
+    private bool CanMoveDiagonally(Tile currentTile, int xDirection, int zDirection)
+    {
+        Tile horizontalTile = tileController.GetTile(currentTile.x + xDirection, currentTile.z);
+        Tile verticalTile = tileController.GetTile(currentTile.x, currentTile.z + zDirection);
+
+        if (horizontalTile == null || !horizontalTile.walkable || verticalTile == null || !verticalTile.walkable)
+        {
+            return false;
+        }
+        return true;
     }
 }

@@ -7,6 +7,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
 {
 
     public UnitController unitController;
+    public TileController tileController;
     void Start()
     {
         
@@ -43,13 +44,14 @@ public class NewMonoBehaviourScript : MonoBehaviour
                 Unit unit = unitController.selectedUnit;
                 unit.targetPoint = new Vector3(hit.point.x, 1.0f, hit.point.z);
 
-                Tile startTile = unit.currentTile;
+                Tile startTile = tileController.GetTileFromWorldPosition(unit.transform.position);
                 Tile targetTile = clickedTile;
 
                 List<Tile> path = unitController.pathfinder.FindPath(startTile, targetTile);
 
                 if(path != null)
-                {
+                {              
+
                     path = unitController.pathfinder.SmoothPath(path);
 
                     unit.FollowPath(path);
