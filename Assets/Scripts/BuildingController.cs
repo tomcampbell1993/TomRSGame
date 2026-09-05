@@ -24,10 +24,18 @@ public class BuildingController : MonoBehaviour
 
         Building buildingScript = building.GetComponent<Building>();
         buildingScript.buildingController = this;
-        buildingScript.coreTile = targetTile;
+        buildingScript.tileController = tileController;
+        buildingScript.coreTile = targetTile;  
+        buildingScript.lengthX = 5;
+        buildingScript.lengthZ = 2;
+        buildingScript.SetContainingTiles();
+        foreach(Tile tile in buildingScript.containingTiles)
+        {
+            tile.walkable = false;
+        }
+
         building.transform.position = PlaceBuilding(buildingScript);
-        buildingScript.lengthX = 3;
-        buildingScript.lengthZ = 3;
+
         building.transform.localScale =
             new Vector3(
                 buildingScript.lengthX * tileController.tileSize,
