@@ -26,9 +26,7 @@ public class BuildingController : MonoBehaviour
         buildingScript.buildingController = this;
         buildingScript.tileController = tileController;
         buildingScript.coreTile = targetTile;  
-        buildingScript.lengthX = 5;
-        buildingScript.lengthZ = 2;
-        buildingScript.SetContainingTiles();
+        buildingScript.Initialize(5,2);
         foreach(Tile tile in buildingScript.containingTiles)
         {
             tile.walkable = false;
