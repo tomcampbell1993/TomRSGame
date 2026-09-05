@@ -10,6 +10,7 @@ public class Unit : MonoBehaviour
     public Tile currentTile;
     public List<Tile> currentPath;
     public Vector3 targetPoint;
+    public Building targetBuilding;
 
     private bool isMoving = false;
     private int pathIndex = 0;
@@ -51,7 +52,11 @@ public class Unit : MonoBehaviour
         else
         {
             isMoving = false;
-            //MoveToPoint(targetPoint);
+            if(targetBuilding != null)
+            {
+                Debug.Log("Unit has reached " +  targetBuilding.name);
+                targetBuilding = null;
+            }
         }
     }
 
@@ -66,7 +71,7 @@ public class Unit : MonoBehaviour
     {
         transform.position = Vector3.MoveTowards(transform.position, point, moveSpeed * Time.deltaTime);
 
-        if(transform.position == point)
+        if (transform.position == point)
         {
             isMoving = false;
             return;

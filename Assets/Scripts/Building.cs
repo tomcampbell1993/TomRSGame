@@ -10,7 +10,6 @@ public class Building : MonoBehaviour
     public int lengthZ; // See X but for z value upwards
     public List<Tile> containingTiles = new List<Tile>();
     public List<Tile> surroundingTiles = new List<Tile>();
-    public float interactionDistance = 1.0f;
     void Start()
     {
 
@@ -56,7 +55,7 @@ public class Building : MonoBehaviour
         }
     }
 
-    public Tile getClosestSurroundingTile(Vector3 unitPosition)
+    public Tile GetClosestSurroundingTile(Vector3 unitPosition)
     {
         Tile closestTile = null;
         float closestDistance = Mathf.Infinity;
@@ -71,6 +70,7 @@ public class Building : MonoBehaviour
             if( distance < closestDistance)
             {
                 closestTile = tile;
+                closestDistance = distance;
             }
         }
 
