@@ -24,8 +24,6 @@ public class Pathfinder : MonoBehaviour
         // h heuristic estimated distance between current tile and target tile
         // f is total cost of the node
 
-        int[,] offsets = { { -1, -1 }, { 0, -1 }, { +1, -1 }, { +1, 0 }, { +1, +1 }, { 0, +1 }, { -1, +1 }, { -1, 0 } };
-
         Tile currentTile = startTile;
 
         currentTile.g = 0;
@@ -64,60 +62,56 @@ public class Pathfinder : MonoBehaviour
                 return path;
             }
 
-            Tile[] adjacentTiles = new Tile[8];
-            for (int i = 0; i < 8; i++)
+            foreach (Tile tile in currentTile.GetAdjacentTiles())
             {
-                int x = currentTile.x + offsets[i, 0];
-                int z = currentTile.z + offsets[i, 1];
-                adjacentTiles[i] = tileController.GetTile(x, z);
-            }
 
-            for (int i = 0; i < 8; i++)
-            {
-                if (adjacentTiles[i] == null)
+                if (closedList.Contains(tile))
                 {
                     continue;
                 }
 
-                if (closedList.Contains(adjacentTiles[i]))
-                {
-                    continue;
-                }
-
-                if (!adjacentTiles[i].walkable)
+                if (!tile.walkable)
                 {
                     continue;
                 }
 
                 float diagonalMultiplier = 1f;
 
-                if (offsets[i, 0] != 0 && offsets[i, 1] != 0)
+                int xDifference = Mathf.Abs(tile.x - currentTile.x);
+                int zDifference = Mathf.Abs(tile.z - currentTile.z);
+
+                bool isDiagonal = xDifference == 1 && zDifference == 1;
+
+                if (isDiagonal)
                 {
-                    if (!CanMoveDiagonally(currentTile, offsets[i, 0], offsets[i, 1]))
+                    int xDirection = tile.x - currentTile.x;
+                    int zDirection = tile.z - currentTile.z;
+
+                    if (!CanMoveDiagonally(currentTile, xDirection, zDirection))
                     {
                         continue;
                     }
                     diagonalMultiplier = Mathf.Sqrt(2);
                 }
 
-                float newG = currentTile.g + (adjacentTiles[i].movementCost * diagonalMultiplier);
+                float newG = currentTile.g + (tile.movementCost * diagonalMultiplier);
 
-                if (openList.Contains(adjacentTiles[i]))
+                if (openList.Contains(tile))
                 {
-                    if (newG < adjacentTiles[i].g)
+                    if (newG < tile.g)
                     {
-                        adjacentTiles[i].g = newG;
-                        adjacentTiles[i].f = newG + adjacentTiles[i].h;
-                        adjacentTiles[i].cameFrom = currentTile;
+                        tile.g = newG;
+                        tile.f = newG + tile.h;
+                        tile.cameFrom = currentTile;
                     }
                 }
                 else
                 {
-                    adjacentTiles[i].g = newG;
-                    adjacentTiles[i].h = CalculateHeuristic(adjacentTiles[i], targetTile);
-                    adjacentTiles[i].f = adjacentTiles[i].g + adjacentTiles[i].h;
-                    adjacentTiles[i].cameFrom = currentTile;
-                    openList.Add(adjacentTiles[i]);
+                    tile.g = newG;
+                    tile.h = CalculateHeuristic(tile, targetTile);
+                    tile.f = tile.g + tile.h;
+                    tile.cameFrom = currentTile;
+                    openList.Add(tile);
                 }
             }
         }
