@@ -9,12 +9,12 @@ public class BuildingController : MonoBehaviour
     public List<GameObject> buildings = new List<GameObject>();
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+
     }
 
     public void CreateBuilding(int xPosition, int zPosition)
@@ -24,10 +24,8 @@ public class BuildingController : MonoBehaviour
 
         Building buildingScript = building.GetComponent<Building>();
         buildingScript.buildingController = this;
-        buildingScript.tileController = tileController;
-        buildingScript.coreTile = targetTile;  
-        buildingScript.Initialize(5,2);
-        foreach(Tile tile in buildingScript.containingTiles)
+        buildingScript.Initialize(tileController, targetTile, 5, 2);
+        foreach (Tile tile in buildingScript.containingTiles)
         {
             tile.walkable = false;
         }

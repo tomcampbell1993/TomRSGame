@@ -198,6 +198,7 @@ MonoBehaviour:
   tileController: {fileID: 1657484119}
   unitController: {fileID: 1302544241}
   buildingController: {fileID: 145142220}
+  resourceController: {fileID: 1945705973}
   terrainGenerator: {fileID: 1621337967}
 --- !u!4 &218364299
 Transform:
@@ -731,6 +732,55 @@ MonoBehaviour:
   terrainGenerator: {fileID: 1621337967}
   tileSize: 1
   allTiles: []
+--- !u!1 &1945705972
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1945705974}
+  - component: {fileID: 1945705973}
+  m_Layer: 0
+  m_Name: ResourceController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1945705973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1945705972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62e16ffa1e08bc4886e9c37c71fc051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ResourceController
+  resourcePrefab: {fileID: 5190843821946871759, guid: d2ac96c360744e94e9f7aa68965b9f2a, type: 3}
+  tileController: {fileID: 1657484119}
+  resources: []
+  treePrefab: {fileID: 5190843821946871759, guid: d2ac96c360744e94e9f7aa68965b9f2a, type: 3}
+  stonePrefab: {fileID: 3414360311509302310, guid: c6bbd7fb0601d1149b3d99fe49bab28e, type: 3}
+--- !u!4 &1945705974
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1945705972}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.41249, y: -0, z: 6.86315}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2069156569
 GameObject:
   m_ObjectHideFlags: 0
@@ -791,3 +841,4 @@ SceneRoots:
   - {fileID: 779375040}
   - {fileID: 1621337968}
   - {fileID: 145142221}
+  - {fileID: 1945705974}

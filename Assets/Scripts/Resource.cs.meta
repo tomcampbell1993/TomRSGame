@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a877e86bbb2ecca48abc82f88c7dab77
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - tileController: {instanceID: 0}
+  - treeMaterial: {fileID: 2100000, guid: 42a8a69e4bfcf394d9c6c315b723652e, type: 2}
+  - stoneMaterial: {fileID: 2100000, guid: e92754554d8a331429be8789743e7da5, type: 2}
+  - containingTile: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

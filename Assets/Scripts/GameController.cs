@@ -6,6 +6,7 @@ public class GameController : MonoBehaviour
     public TileController tileController;
     public UnitController unitController;
     public BuildingController buildingController;
+    public ResourceController resourceController;
     public TerrainGenerator terrainGenerator;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -15,6 +16,8 @@ public class GameController : MonoBehaviour
         unitController.CreateUnit(1, 1);
         unitController.CreateUnit(2, 2);
         buildingController.CreateBuilding(5, 7);
+        resourceController.CreateResource(12, 12, Resource.ResourceType.Tree);
+        resourceController.CreateResource(14, 12, Resource.ResourceType.Stone);
     }
 
     // Update is called once per frame

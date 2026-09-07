@@ -1,0 +1,13 @@
+Dunno how to structure this.
+
+Ideas:
+
+Pathfinding, reverse direction so we don't need to reverse it from the beginning.
+
+Repeat pathfinding for repeat jobs like trading and resource collecting.
+
+
+
+Things to do:
+Common function for adjacent tiles. - Done
+Resources.

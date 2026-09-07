@@ -20,8 +20,10 @@ public class Building : MonoBehaviour
 
     }
 
-    public void Initialize(int xSize, int zSize)
+    public void Initialize(TileController tileController, Tile coreTile, int xSize, int zSize)
     {
+        this.tileController = tileController;
+        this.coreTile = coreTile;
         lengthX = xSize;
         lengthZ = zSize;
         SetContainingTiles();
