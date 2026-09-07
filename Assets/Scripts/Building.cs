@@ -44,10 +44,9 @@ public class Building : MonoBehaviour
         int[,] offsets = { { -1, -1 }, { 0, -1 }, { +1, -1 }, { +1, 0 }, { +1, +1 }, { 0, +1 }, { -1, +1 }, { -1, 0 } };
         foreach (Tile tile in containingTiles)
         {
-            for (int i = 0; i < 8; i++)
+            foreach (Tile adjacentTile in tile.GetAdjacentTiles())
             {
-                Tile adjacentTile = tileController.GetTile(tile.x + offsets[i, 0], tile.z + offsets[i, 1]);
-                if (adjacentTile != null && !surroundingTiles.Contains(adjacentTile))
+                if (!surroundingTiles.Contains(adjacentTile))
                 {
                     surroundingTiles.Add(adjacentTile);
                 }
@@ -59,7 +58,7 @@ public class Building : MonoBehaviour
     {
         Tile closestTile = null;
         float closestDistance = Mathf.Infinity;
-        foreach( Tile tile in surroundingTiles)
+        foreach (Tile tile in surroundingTiles)
         {
             if (!tile.walkable)
             {
@@ -67,7 +66,7 @@ public class Building : MonoBehaviour
             }
 
             float distance = Vector3.Distance(unitPosition, tile.transform.position);
-            if( distance < closestDistance)
+            if (distance < closestDistance)
             {
                 closestTile = tile;
                 closestDistance = distance;

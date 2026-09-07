@@ -30,11 +30,16 @@ public class TileController : MonoBehaviour
             Tile tile = tileObject.GetComponent<Tile>();
             tile.x = data.x;
             tile.z = data.z;
+            tile.tileController = this;
             tile.Initialize(data.type);
             tile.name = $"Tile_{tile.x}_{tile.z}_{tile.tiletype}";
             tile.transform.localPosition = new Vector3(tile.x * tileSize, 0, tile.z * tileSize);
-            tiles[tile.x, tile.z] = tile;
+            tiles[tile.x, tile.z] = tile;           
             allTiles.Add(tile);
+        }
+        foreach(Tile tile in allTiles)
+        {
+            tile.SetAdjacentTiles();
         }
     }
 
