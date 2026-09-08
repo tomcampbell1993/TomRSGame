@@ -13,8 +13,8 @@ public class GameController : MonoBehaviour
     {
         terrainGenerator.Initialize(TerrainGenerator.GeneratedTerrain.Lakes);
         tileController.initialize(terrainGenerator.terrainData);
-        unitController.CreateUnit(1, 1);
-        unitController.CreateUnit(2, 2);
+        unitController.CreateUnit(1, 1, Unit.UnitType.Worker);
+        unitController.CreateUnit(2, 2, Unit.UnitType.Fighter);
         buildingController.CreateBuilding(5, 7);
         resourceController.CreateResource(12, 12, Resource.ResourceType.Tree);
         resourceController.CreateResource(14, 12, Resource.ResourceType.Stone);

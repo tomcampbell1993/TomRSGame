@@ -33,11 +33,11 @@ public class Resource : MonoBehaviour
         this.tileController = tileController;
         this.containingTile = containingTile;
         resourceType = type;
-        SetMaterial();
+        SetResourceType();
         SetSurroundingTiles();
     }
 
-    void SetMaterial()
+    void SetResourceType()
     {
         switch (resourceType)
         {
