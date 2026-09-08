@@ -5,12 +5,19 @@ public class Unit : MonoBehaviour
 {
 
     public UnitController unitController;
-    public bool selected = false;
     public float moveSpeed;
     public Tile currentTile;
-    public List<Tile> currentPath;
+    public List<Tile> currentPath = new List<Tile>();
     public Vector3 targetPoint;
     public Building targetBuilding;
+
+    public enum UnitType
+    {
+        Worker,
+        Fighter
+    }
+
+    public UnitType unitType;
 
     private bool isMoving = false;
     private int pathIndex = 0;
@@ -24,9 +31,10 @@ public class Unit : MonoBehaviour
         Movement();
     }
 
-    private void OnMouseDown()
+    public void Initialize(UnitController unitController, UnitType unitType)
     {
-        unitController.selectUnit(this);
+        this.unitController = unitController;
+        this.unitType = unitType;
     }
 
     private void Movement()
@@ -76,15 +84,5 @@ public class Unit : MonoBehaviour
             isMoving = false;
             return;
         }
-    }
-
-    public void Select()
-    {
-        selected = true;
-    }
-
-    public void Deselect()
-    {
-        selected = false;
     }
 }

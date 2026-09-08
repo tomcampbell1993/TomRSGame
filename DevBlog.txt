@@ -1,0 +1,27 @@
+Dunno how to structure this.
+
+Ideas:
+
+Pathfinding, reverse direction so we don't need to reverse it from the beginning.
+
+Repeat pathfinding for repeat jobs like trading and resource collecting.
+
+Where I left off:
+
+
+
+Things to do:
+Common function for adjacent tiles. - Done
+Resources.
+
+Actual Plans:
+
+Unit templates, custom that can be created before game start.
+recources split into big "resources" and smaller items.
+
+Resources:
+Unit -> right click to interact.
+Check unit type if worker etc.
+
+9/8/2026
+Updated a lot of selection to prepare for clicking on different things, separated it out, didn't quite finish deselect yet
