@@ -68,6 +68,7 @@ public class Unit : MonoBehaviour
         }
     }
 
+    //This is what you would call externally in selection controller to get this moving, the condition in movements depends on the size of path
     public void FollowPath(List<Tile> path)
     {
         isMoving = true;

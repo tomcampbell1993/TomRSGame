@@ -37,7 +37,7 @@ public class SelectionController : MonoBehaviour
             {
                 GetClickedObject(hit);
                 if (clickedUnit != null)
-                {                   
+                {
                     if (selectedUnit == clickedUnit)
                     {
                         return;
@@ -61,12 +61,17 @@ public class SelectionController : MonoBehaviour
                 {
                     return;
                 }
-                if(clickedTile != null)
+                if (clickedTile != null)
                 {
                     HandleMovement();
                     return;
                 }
-                if(clickedBuilding != null)
+                if (clickedBuilding != null)
+                {
+                    HandleMovement();
+                    return;
+                }
+                if (clickedResource != null)
                 {
                     HandleMovement();
                     return;
@@ -92,7 +97,7 @@ public class SelectionController : MonoBehaviour
     {
         Tile targetTile;
 
-        if(clickedBuilding != null)
+        if (clickedBuilding != null)
         {
             targetTile = clickedBuilding.GetClosestSurroundingTile(selectedUnit.transform.position);
             if (targetTile == null)
@@ -100,6 +105,15 @@ public class SelectionController : MonoBehaviour
                 return;
             }
             selectedUnit.targetBuilding = clickedBuilding;
+        }
+
+        else if (clickedResource != null)
+        {
+            targetTile = clickedResource.GetClosestTile(selectedUnit.transform.position);
+            if (targetTile == null)
+            {
+                return;
+            }
         }
         else
         {

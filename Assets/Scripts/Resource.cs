@@ -20,12 +20,12 @@ public class Resource : MonoBehaviour
     public List<Tile> surroundingTiles = new List<Tile>();
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+
     }
 
     public void Initialize(TileController tileController, Tile containingTile, ResourceType type)
@@ -53,5 +53,25 @@ public class Resource : MonoBehaviour
     private void SetSurroundingTiles()
     {
         surroundingTiles = containingTile.GetAdjacentTiles();
+    }
+
+    public Tile GetClosestTile(Vector3 unitPosition)
+    {
+        Tile closestTile = null;
+        float closestDistance = Mathf.Infinity;
+        foreach (Tile tile in surroundingTiles)
+        {
+            if (!tile.walkable)
+            {
+                continue;
+            }
+            float distance = Vector3.Distance(unitPosition, tile.transform.position);
+            if (distance < closestDistance)
+            {
+                closestTile = tile;
+                closestDistance = distance;
+            }
+        }
+        return closestTile;
     }
 }
