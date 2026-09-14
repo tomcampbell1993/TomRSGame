@@ -66,7 +66,6 @@ public class Building : MonoBehaviour
             {
                 continue;
             }
-
             float distance = Vector3.Distance(unitPosition, tile.transform.position);
             if (distance < closestDistance)
             {

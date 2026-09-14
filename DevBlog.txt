@@ -23,5 +23,8 @@ Resources:
 Unit -> right click to interact.
 Check unit type if worker etc.
 
+9/14/2026
+Updated pathfinding and selection so now it mines when units reach rocks, done the relevant checks, added enums to a bunch of stuff to define what it was. Rearranged folders.
+
 9/8/2026
-Updated a lot of selection to prepare for clicking on different things, separated it out, didn't quite finish deselect yet
+Updated a lot of selection to prepare for clicking on different things, separated it out, didn't quite finish deselect yet.
