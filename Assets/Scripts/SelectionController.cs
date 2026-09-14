@@ -104,6 +104,7 @@ public class SelectionController : MonoBehaviour
             {
                 return;
             }
+            selectedUnit.targetResource = null;
             selectedUnit.targetBuilding = clickedBuilding;
         }
 
@@ -114,9 +115,12 @@ public class SelectionController : MonoBehaviour
             {
                 return;
             }
+            selectedUnit.targetResource = clickedResource;
+            selectedUnit.targetBuilding = null;
         }
         else
         {
+            selectedUnit.targetResource = null;
             selectedUnit.targetBuilding = null;
             targetTile = clickedTile;
         }

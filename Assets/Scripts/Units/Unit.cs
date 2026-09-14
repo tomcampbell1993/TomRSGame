@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
@@ -10,6 +10,8 @@ public class Unit : MonoBehaviour
     public List<Tile> currentPath = new List<Tile>();
     public Vector3 targetPoint;
     public Building targetBuilding;
+    public Resource targetResource;
+    public BigItem.BigItemType carriedBigItem = BigItem.BigItemType.None;
 
     public enum UnitType
     {
@@ -19,8 +21,16 @@ public class Unit : MonoBehaviour
 
     public UnitType unitType;
 
-    private bool isMoving = false;
+    public enum UnitState
+    {
+        Idle,
+        Moving,
+        Mining,
+    }
+    public UnitState unitState = UnitState.Idle;
+
     private int pathIndex = 0;
+    private float miningTimer = 0f;
     void Start()
     {
 
@@ -28,7 +38,23 @@ public class Unit : MonoBehaviour
 
     void Update()
     {
-        Movement();
+        UpdateState();
+    }
+
+    void UpdateState()
+    {
+        switch (unitState)
+        {
+            case UnitState.Idle:
+                break;
+
+            case UnitState.Moving:
+                Movement();
+                break;
+            case UnitState.Mining:
+                Mining();
+                break;
+        }
     }
 
     public void Initialize(UnitController unitController, UnitType unitType)
@@ -39,11 +65,6 @@ public class Unit : MonoBehaviour
 
     private void Movement()
     {
-        if (!isMoving)
-        {
-            return;
-        }
-
         if (pathIndex < currentPath.Count)
         {
 
@@ -59,10 +80,19 @@ public class Unit : MonoBehaviour
         }
         else
         {
-            isMoving = false;
-            if(targetBuilding != null)
+            if (targetResource != null)
             {
-                Debug.Log("Unit has reached " +  targetBuilding.name);
+                if (targetResource.resourceType == Resource.ResourceType.Stone)
+                {
+                    unitState = UnitState.Mining;
+                    return;
+                }
+            }
+
+            unitState = UnitState.Idle;
+
+            if (targetBuilding != null)
+            {
                 targetBuilding = null;
             }
         }
@@ -71,7 +101,7 @@ public class Unit : MonoBehaviour
     //This is what you would call externally in selection controller to get this moving, the condition in movements depends on the size of path
     public void FollowPath(List<Tile> path)
     {
-        isMoving = true;
+        unitState = UnitState.Moving;
         pathIndex = 1;
         currentPath = path;
     }
@@ -82,8 +112,39 @@ public class Unit : MonoBehaviour
 
         if (transform.position == point)
         {
-            isMoving = false;
+            unitState = UnitState.Idle;
             return;
         }
+    }
+
+    void Mining()
+    {
+        if (targetResource == null)
+        {
+            unitState = UnitState.Idle;
+            return;
+        }
+
+        if (carriedBigItem != BigItem.BigItemType.None)
+        {
+            unitState = UnitState.Idle;
+            return;
+        }
+
+        miningTimer += Time.deltaTime;
+        if (miningTimer >= 10.0f)
+        {
+            miningTimer = 0f;
+
+            if (targetResource.resourceType == Resource.ResourceType.Stone)
+            {
+                carriedBigItem = BigItem.BigItemType.Stone;
+            }
+
+            unitState = UnitState.Idle;
+            targetResource = null;
+            return;
+        }
+
     }
 }
