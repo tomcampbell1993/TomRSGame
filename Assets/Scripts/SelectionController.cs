@@ -17,7 +17,6 @@ public class SelectionController : MonoBehaviour
 
     private Tile clickedTile;
     private Unit clickedUnit;
-    private Unit pathingUnit;
     private Building clickedBuilding;
     private Resource clickedResource;
 
@@ -39,12 +38,12 @@ public class SelectionController : MonoBehaviour
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             DeSelect();
-            dragStartPosition = Mouse.current.position.ReadValue();
-            selectionBox.gameObject.SetActive(true);
+            dragStartPosition = Mouse.current.position.ReadValue();           
         }
 
         if (Mouse.current.leftButton.isPressed)
         {
+            selectionBox.gameObject.SetActive(true);
             UpdateSelectionBox(Mouse.current.position.ReadValue());
         }
 
@@ -71,7 +70,7 @@ public class SelectionController : MonoBehaviour
         {
             GetClickedObject(hit);
             if (clickedUnit != null)
-            {               
+            {
                 selectedUnits.Add(clickedUnit);
             }
         }
@@ -84,10 +83,10 @@ public class SelectionController : MonoBehaviour
         float minY = Mathf.Min(dragStart.y, dragEnd.y);
         float maxY = Mathf.Max(dragStart.y, dragEnd.y);
 
-        foreach( GameObject unit in unitController.units)
+        foreach (GameObject unit in unitController.units)
         {
             Vector3 unitScreenPosition = Camera.main.WorldToScreenPoint(unit.transform.position);
-            if(unitScreenPosition.x < maxX && unitScreenPosition.x > minX &&  unitScreenPosition.y < maxY && unitScreenPosition.y > minY)
+            if (unitScreenPosition.x < maxX && unitScreenPosition.x > minX && unitScreenPosition.y < maxY && unitScreenPosition.y > minY)
             {
                 selectedUnits.Add(unit.GetComponent<Unit>());
             }
@@ -100,7 +99,7 @@ public class SelectionController : MonoBehaviour
         float width = Mathf.Abs(dragStartPosition.x - currentMousePosition.x);
         float height = Mathf.Abs(dragStartPosition.y - currentMousePosition.y);
         selectionBox.position = centre;
-        selectionBox.sizeDelta = new Vector2 (width, height);
+        selectionBox.sizeDelta = new Vector2(width, height);
     }
 
     void HandleRightClick()
@@ -115,9 +114,6 @@ public class SelectionController : MonoBehaviour
                 {
                     return;
                 }
-
-                pathingUnit = selectedUnits[0];
-
                 if (clickedTile != null)
                 {
                     HandleMovement();
@@ -154,44 +150,48 @@ public class SelectionController : MonoBehaviour
     {
         Tile targetTile;
 
-        if (clickedBuilding != null)
+        foreach (Unit unit in selectedUnits)
         {
-            targetTile = clickedBuilding.GetClosestSurroundingTile(pathingUnit.transform.position);
-            if (targetTile == null)
-            {
-                return;
-            }
-            pathingUnit.targetResource = null;
-            pathingUnit.targetBuilding = clickedBuilding;
-        }
 
-        else if (clickedResource != null)
-        {
-            targetTile = clickedResource.GetClosestTile(pathingUnit.transform.position);
-            if (targetTile == null)
+            if (clickedBuilding != null)
             {
-                return;
+                targetTile = clickedBuilding.GetClosestSurroundingTile(unit.transform.position);
+                if (targetTile == null)
+                {
+                    continue;
+                }
+                unit.targetResource = null;
+                unit.targetBuilding = clickedBuilding;
             }
-            pathingUnit.targetResource = clickedResource;
-            pathingUnit.targetBuilding = null;
-        }
-        else
-        {
-            pathingUnit.targetResource = null;
-            pathingUnit.targetBuilding = null;
-            targetTile = clickedTile;
-        }
 
-        if (!targetTile.walkable)
-        {
-            return;
-        }
-        Tile startTile = tileController.GetTileFromWorldPosition(pathingUnit.transform.position);
-        List<Tile> path = unitController.pathfinder.FindPath(startTile, targetTile);
-        if (path != null)
-        {
-            path = unitController.pathfinder.SmoothPath(path);
-            pathingUnit.FollowPath(path);
+            else if (clickedResource != null)
+            {
+                targetTile = clickedResource.GetClosestTile(unit.transform.position);
+                if (targetTile == null)
+                {
+                    continue;
+                }
+                unit.targetResource = clickedResource;
+                unit.targetBuilding = null;
+            }
+            else
+            {
+                unit.targetResource = null;
+                unit.targetBuilding = null;
+                targetTile = clickedTile;
+            }
+
+            if (!targetTile.walkable)
+            {
+                continue;
+            }
+            Tile startTile = tileController.GetTileFromWorldPosition(unit.transform.position);
+            List<Tile> path = unitController.pathfinder.FindPath(startTile, targetTile);
+            if (path != null)
+            {
+                path = unitController.pathfinder.SmoothPath(path);
+                unit.FollowPath(path);
+            }
         }
     }
 }
