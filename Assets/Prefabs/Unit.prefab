@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5582319267960605071}
   - component: {fileID: 4661447272426009753}
   - component: {fileID: 4778911640036696869}
-  - component: {fileID: 6586256204089408598}
   - component: {fileID: -7010015313413411808}
+  - component: {fileID: 1649046702773400164}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -92,8 +92,30 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6586256204089408598
-BoxCollider:
+--- !u!114 &-7010015313413411808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8026054944925352884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24d1716a62576cd44b1110494cab1ead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unit
+  unitController: {fileID: 0}
+  moveSpeed: 2
+  currentTile: {fileID: 0}
+  currentPath: []
+  targetPoint: {x: 0, y: 0, z: 0}
+  targetBuilding: {fileID: 0}
+  targetResource: {fileID: 0}
+  carriedBigItem: 0
+  unitType: 0
+  unitState: 0
+--- !u!136 &1649046702773400164
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -110,21 +132,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  serializedVersion: 2
+  m_Radius: 0.49999997
+  m_Height: 1
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-7010015313413411808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8026054944925352884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24d1716a62576cd44b1110494cab1ead, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Unit
-  unitController: {fileID: 0}
-  selected: 0
-  moveSpeed: 2

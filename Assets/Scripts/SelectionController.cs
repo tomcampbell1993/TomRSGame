@@ -10,6 +10,7 @@ public class SelectionController : MonoBehaviour
     public TileController tileController;
     public BuildingController buildingController;
     public ResourceController resourceController;
+    public RectTransform selectionBox;
 
     public List<Unit> selectedUnits = new List<Unit>();
 
@@ -39,6 +40,12 @@ public class SelectionController : MonoBehaviour
         {
             DeSelect();
             dragStartPosition = Mouse.current.position.ReadValue();
+            selectionBox.gameObject.SetActive(true);
+        }
+
+        if (Mouse.current.leftButton.isPressed)
+        {
+            UpdateSelectionBox(Mouse.current.position.ReadValue());
         }
 
         if (Mouse.current.leftButton.wasReleasedThisFrame)
@@ -53,7 +60,7 @@ public class SelectionController : MonoBehaviour
             {
                 HandleLeftDrag(dragStartPosition, dragEndPosition);
             }
-
+            selectionBox.gameObject.SetActive(false);
         }
     }
 
@@ -85,6 +92,15 @@ public class SelectionController : MonoBehaviour
                 selectedUnits.Add(unit.GetComponent<Unit>());
             }
         }
+    }
+
+    void UpdateSelectionBox(Vector2 currentMousePosition)
+    {
+        Vector2 centre = (dragStartPosition + currentMousePosition) / 2;
+        float width = Mathf.Abs(dragStartPosition.x - currentMousePosition.x);
+        float height = Mathf.Abs(dragStartPosition.y - currentMousePosition.y);
+        selectionBox.position = centre;
+        selectionBox.sizeDelta = new Vector2 (width, height);
     }
 
     void HandleRightClick()
