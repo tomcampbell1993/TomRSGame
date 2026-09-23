@@ -27,6 +27,8 @@ public class Tile : MonoBehaviour
     public Material groundMaterial;
     public Material waterMaterial;
 
+    public List<Unit> occupyingUnits = new List<Unit>();
+
     private List<Tile> adjacentTiles = new List<Tile>();
     void Start()
     {
@@ -73,8 +75,8 @@ public class Tile : MonoBehaviour
 
         for (int i = 0; i < 8; i++)
         {
-            Tile adjacentTile = tileController.GetTile(x + offsets[i,0], z + offsets[i,1]);
-            if(adjacentTile != null)
+            Tile adjacentTile = tileController.GetTile(x + offsets[i, 0], z + offsets[i, 1]);
+            if (adjacentTile != null)
             {
                 adjacentTiles.Add(adjacentTile);
             }
@@ -84,5 +86,23 @@ public class Tile : MonoBehaviour
     public List<Tile> GetAdjacentTiles()
     {
         return adjacentTiles;
+    }
+
+    public void RemoveOccupyingUnit(Unit unit)
+    {
+        if (!occupyingUnits.Contains(unit))
+        {
+            return;
+        }
+        occupyingUnits.Remove(unit);
+    }
+
+     public void AddOccupyingUnit(Unit unit)
+    {
+        if (occupyingUnits.Contains(unit))
+        {
+            return;
+        }
+        occupyingUnits.Add(unit);
     }
 }

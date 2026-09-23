@@ -6,6 +6,7 @@ public class Unit : MonoBehaviour
 
     public UnitController unitController;
     public float moveSpeed;
+    public float unitRadius = 0.25f;
     public Tile currentTile;
     public List<Tile> currentPath = new List<Tile>();
     public Vector3 targetPoint;
@@ -39,6 +40,10 @@ public class Unit : MonoBehaviour
     void Update()
     {
         UpdateState();
+        if (IsUnitCollisionDetected())
+        {
+            Debug.Log("COLLISION");
+        }
     }
 
     void UpdateState()
@@ -57,10 +62,13 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void Initialize(UnitController unitController, UnitType unitType)
+    public void Initialize(UnitController unitController, UnitType unitType, Tile currentTile, float unitRadius)
     {
         this.unitController = unitController;
         this.unitType = unitType;
+        this.currentTile = currentTile;
+        currentTile.AddOccupyingUnit(this);
+        this.unitRadius = unitRadius;
     }
 
     private void Movement()
@@ -71,10 +79,10 @@ public class Unit : MonoBehaviour
             Tile targetTile = currentPath[pathIndex];
 
             transform.position = Vector3.MoveTowards(transform.position, targetTile.transform.position + Vector3.up, moveSpeed * Time.deltaTime);
+            UpdateCurrentTile();
 
             if (transform.position == targetTile.transform.position + Vector3.up)
             {
-                currentTile = targetTile;
                 pathIndex++;
             }
         }
@@ -96,6 +104,22 @@ public class Unit : MonoBehaviour
                 targetBuilding = null;
             }
         }
+    }
+
+    void UpdateCurrentTile()
+    {
+        Tile newTile = unitController.tileController.GetTileFromWorldPosition(transform.position);
+        if (newTile == null)
+        {
+            return;
+        }
+        if (newTile == currentTile)
+        {
+            return;
+        }
+        currentTile.RemoveOccupyingUnit(this);
+        newTile.AddOccupyingUnit(this);
+        currentTile = newTile;
     }
 
     //This is what you would call externally in selection controller to get this moving, the condition in movements depends on the size of path
@@ -145,6 +169,44 @@ public class Unit : MonoBehaviour
             targetResource = null;
             return;
         }
+    }
 
+    bool IsUnitCollisionDetected()
+    {
+        List<Unit> potentialUnits = new List<Unit>();
+
+        foreach (Unit unit in currentTile.occupyingUnits)
+        {
+            if (unit != this)
+            {
+                potentialUnits.Add(unit);
+            }
+        }
+        foreach (Tile tile in currentTile.GetAdjacentTiles())
+        {
+            foreach (Unit unit in tile.occupyingUnits)
+            {
+                potentialUnits.Add(unit);
+            }
+        }
+        if (potentialUnits.Count == 0)
+        {
+            return false;
+        }
+
+        Vector2 myPosition = new Vector2(transform.position.x, transform.position.z);
+
+        foreach (Unit unit in potentialUnits)
+        {         
+            Vector2 theirPosition = new Vector2(unit.transform.position.x, unit.transform.position.z);
+
+            float distance = Vector2.Distance(myPosition, theirPosition);
+
+            if (distance < (unitRadius + unit.unitRadius))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
