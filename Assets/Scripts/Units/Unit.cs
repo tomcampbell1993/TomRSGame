@@ -39,11 +39,7 @@ public class Unit : MonoBehaviour
 
     void Update()
     {
-        UpdateState();
-        if (IsUnitCollisionDetected())
-        {
-            Debug.Log("COLLISION");
-        }
+ 
     }
 
     void UpdateState()
@@ -171,9 +167,24 @@ public class Unit : MonoBehaviour
         }
     }
 
-    bool IsUnitCollisionDetected()
+    // Returns bool whether This unit has collided with another based on the distance between their combined radius
+    bool IsUnitCollisionDetected(Unit thisUnit, Unit thatUnit)
+    {
+        Vector2 thisUnitPosition = new Vector2(thisUnit.transform.position.x, thisUnit.transform.position.z);
+        Vector2 thatUnitPosition = new Vector2(thatUnit.transform.position.x, thatUnit.transform.position.z);
+        float distance = Vector2.Distance(thisUnitPosition, thatUnitPosition);
+        if(distance < thisUnit.unitRadius + thatUnit.unitRadius)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    // This unit looks at its tile and all its surrounding tiles to see which units exist and whether they have collided
+    List<Unit> GetCollidingUnits()
     {
         List<Unit> potentialUnits = new List<Unit>();
+        List<Unit> collidingUnits = new List<Unit>();
 
         foreach (Unit unit in currentTile.occupyingUnits)
         {
@@ -191,22 +202,35 @@ public class Unit : MonoBehaviour
         }
         if (potentialUnits.Count == 0)
         {
-            return false;
+            return collidingUnits;
         }
-
-        Vector2 myPosition = new Vector2(transform.position.x, transform.position.z);
-
         foreach (Unit unit in potentialUnits)
-        {         
-            Vector2 theirPosition = new Vector2(unit.transform.position.x, unit.transform.position.z);
-
-            float distance = Vector2.Distance(myPosition, theirPosition);
-
-            if (distance < (unitRadius + unit.unitRadius))
+        {
+            if(IsUnitCollisionDetected(this, unit))
             {
-                return true;
+                collidingUnits.Add(unit);
             }
         }
-        return false;
+        return collidingUnits;
+    }
+
+
+    void ResolveUnitCollisions(Unit thisUnit, Unit thatUnit)
+    {
+        Vector2 thisUnitPosition = new Vector2(thisUnit.transform.position.x, thisUnit.transform.position.z);
+        Vector2 thatUnitPosition = new Vector2(thatUnit.transform.position.x, thatUnit.transform.position.z);
+        Vector2 targetPosition = new Vector2(targetPoint.x, targetPoint.z);
+        float overlap = (thisUnit.unitRadius + thatUnit.unitRadius)-(Vector2.Distance(thisUnitPosition,thatUnitPosition));
+
+        Vector2 travelDirection = (targetPosition - thisUnitPosition).normalized;
+        // toOtherUnit is a vector between the two units containing distance and direction
+        Vector2 toOtherUnit = (thatUnitPosition - thisUnitPosition);
+        Vector2 perpendicularTravelDirection = new Vector2(-travelDirection.y, travelDirection.x);
+        float opposite = Vector2.Dot(toOtherUnit, perpendicularTravelDirection);
+        float angle = Mathf.Asin(opposite / toOtherUnit.magnitude);
+
+        float totalSpeed = thisUnit.moveSpeed + thatUnit.moveSpeed;
+        float thisUnitSpeedShare = thisUnit.moveSpeed / totalSpeed;
+        float thatUnitSpeedShare = thatUnit.moveSpeed / totalSpeed;
     }
 }
