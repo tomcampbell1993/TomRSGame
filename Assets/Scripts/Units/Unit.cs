@@ -39,7 +39,17 @@ public class Unit : MonoBehaviour
 
     void Update()
     {
- 
+        UpdateState();
+
+        if(unitState == UnitState.Moving)
+        {
+            List<Unit> collidingUnits = GetCollidingUnits();
+
+            foreach(Unit unit in collidingUnits)
+            {
+                ResolveUnitCollisions(this, unit);
+            }
+        }
     }
 
     void UpdateState()
@@ -173,7 +183,7 @@ public class Unit : MonoBehaviour
         Vector2 thisUnitPosition = new Vector2(thisUnit.transform.position.x, thisUnit.transform.position.z);
         Vector2 thatUnitPosition = new Vector2(thatUnit.transform.position.x, thatUnit.transform.position.z);
         float distance = Vector2.Distance(thisUnitPosition, thatUnitPosition);
-        if(distance < thisUnit.unitRadius + thatUnit.unitRadius)
+        if (distance < thisUnit.unitRadius + thatUnit.unitRadius)
         {
             return true;
         }
@@ -206,7 +216,7 @@ public class Unit : MonoBehaviour
         }
         foreach (Unit unit in potentialUnits)
         {
-            if(IsUnitCollisionDetected(this, unit))
+            if (IsUnitCollisionDetected(this, unit))
             {
                 collidingUnits.Add(unit);
             }
@@ -220,7 +230,7 @@ public class Unit : MonoBehaviour
         Vector2 thisUnitPosition = new Vector2(thisUnit.transform.position.x, thisUnit.transform.position.z);
         Vector2 thatUnitPosition = new Vector2(thatUnit.transform.position.x, thatUnit.transform.position.z);
         Vector2 targetPosition = new Vector2(targetPoint.x, targetPoint.z);
-        float overlap = (thisUnit.unitRadius + thatUnit.unitRadius)-(Vector2.Distance(thisUnitPosition,thatUnitPosition));
+        float overlap = (thisUnit.unitRadius + thatUnit.unitRadius) - (Vector2.Distance(thisUnitPosition, thatUnitPosition));
 
         Vector2 travelDirection = (targetPosition - thisUnitPosition).normalized;
         // toOtherUnit is a vector between the two units containing distance and direction
@@ -229,8 +239,49 @@ public class Unit : MonoBehaviour
         float opposite = Vector2.Dot(toOtherUnit, perpendicularTravelDirection);
         float angle = Mathf.Asin(opposite / toOtherUnit.magnitude);
 
-        float totalSpeed = thisUnit.moveSpeed + thatUnit.moveSpeed;
-        float thisUnitSpeedShare = thisUnit.moveSpeed / totalSpeed;
-        float thatUnitSpeedShare = thatUnit.moveSpeed / totalSpeed;
+        float thisUnitSpeedShare;
+        float thatUnitSpeedShare;
+
+        if (thatUnit.unitState == Unit.UnitState.Idle)
+        {
+            thisUnitSpeedShare = 0f;
+            thatUnitSpeedShare = 1f;
+        }
+        else
+        {
+
+            float totalSpeed = thisUnit.moveSpeed + thatUnit.moveSpeed;
+
+            if (totalSpeed <= 0f)
+            {
+                return;
+            }
+
+            thisUnitSpeedShare = thisUnit.moveSpeed / totalSpeed;
+            thatUnitSpeedShare = thatUnit.moveSpeed / totalSpeed;
+
+        }
+
+        float thisUnitCorrection = overlap * thisUnitSpeedShare;
+        float thatUnitCorrection = overlap * thatUnitSpeedShare;
+
+        Vector2 thisUnitDeflectionDirection = -Mathf.Sign(opposite) * perpendicularTravelDirection;
+        Vector2 thatUnitDeflectionDirection = -thisUnitDeflectionDirection;
+
+        Vector2 thisUnitNewPosition = thisUnitPosition + thisUnitDeflectionDirection * thisUnitCorrection;
+
+        Vector2 thatUnitNewPosition = thatUnitPosition + thatUnitDeflectionDirection * thatUnitCorrection;
+
+        thisUnit.transform.position = new Vector3(
+            thisUnitNewPosition.x,
+            thisUnit.transform.position.y,
+            thisUnitNewPosition.y
+        );
+
+        thatUnit.transform.position = new Vector3(
+            thatUnitNewPosition.x,
+            thatUnit.transform.position.y,
+            thatUnitNewPosition.y
+        );
     }
 }
