@@ -6,6 +6,7 @@ public class Unit : MonoBehaviour
 
     public UnitController unitController;
     public float moveSpeed;
+    public float unitRadius = 0.25f;
     public Tile currentTile;
     public List<Tile> currentPath = new List<Tile>();
     public Vector3 targetPoint;
@@ -39,6 +40,16 @@ public class Unit : MonoBehaviour
     void Update()
     {
         UpdateState();
+
+        if(unitState == UnitState.Moving)
+        {
+            List<Unit> collidingUnits = GetCollidingUnits();
+
+            foreach(Unit unit in collidingUnits)
+            {
+                ResolveUnitCollisions(this, unit);
+            }
+        }
     }
 
     void UpdateState()
@@ -57,10 +68,13 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void Initialize(UnitController unitController, UnitType unitType)
+    public void Initialize(UnitController unitController, UnitType unitType, Tile currentTile, float unitRadius)
     {
         this.unitController = unitController;
         this.unitType = unitType;
+        this.currentTile = currentTile;
+        currentTile.AddOccupyingUnit(this);
+        this.unitRadius = unitRadius;
     }
 
     private void Movement()
@@ -71,10 +85,10 @@ public class Unit : MonoBehaviour
             Tile targetTile = currentPath[pathIndex];
 
             transform.position = Vector3.MoveTowards(transform.position, targetTile.transform.position + Vector3.up, moveSpeed * Time.deltaTime);
+            UpdateCurrentTile();
 
             if (transform.position == targetTile.transform.position + Vector3.up)
             {
-                currentTile = targetTile;
                 pathIndex++;
             }
         }
@@ -96,6 +110,22 @@ public class Unit : MonoBehaviour
                 targetBuilding = null;
             }
         }
+    }
+
+    void UpdateCurrentTile()
+    {
+        Tile newTile = unitController.tileController.GetTileFromWorldPosition(transform.position);
+        if (newTile == null)
+        {
+            return;
+        }
+        if (newTile == currentTile)
+        {
+            return;
+        }
+        currentTile.RemoveOccupyingUnit(this);
+        newTile.AddOccupyingUnit(this);
+        currentTile = newTile;
     }
 
     //This is what you would call externally in selection controller to get this moving, the condition in movements depends on the size of path
@@ -145,6 +175,113 @@ public class Unit : MonoBehaviour
             targetResource = null;
             return;
         }
+    }
 
+    // Returns bool whether This unit has collided with another based on the distance between their combined radius
+    bool IsUnitCollisionDetected(Unit thisUnit, Unit thatUnit)
+    {
+        Vector2 thisUnitPosition = new Vector2(thisUnit.transform.position.x, thisUnit.transform.position.z);
+        Vector2 thatUnitPosition = new Vector2(thatUnit.transform.position.x, thatUnit.transform.position.z);
+        float distance = Vector2.Distance(thisUnitPosition, thatUnitPosition);
+        if (distance < thisUnit.unitRadius + thatUnit.unitRadius)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    // This unit looks at its tile and all its surrounding tiles to see which units exist and whether they have collided
+    List<Unit> GetCollidingUnits()
+    {
+        List<Unit> potentialUnits = new List<Unit>();
+        List<Unit> collidingUnits = new List<Unit>();
+
+        foreach (Unit unit in currentTile.occupyingUnits)
+        {
+            if (unit != this)
+            {
+                potentialUnits.Add(unit);
+            }
+        }
+        foreach (Tile tile in currentTile.GetAdjacentTiles())
+        {
+            foreach (Unit unit in tile.occupyingUnits)
+            {
+                potentialUnits.Add(unit);
+            }
+        }
+        if (potentialUnits.Count == 0)
+        {
+            return collidingUnits;
+        }
+        foreach (Unit unit in potentialUnits)
+        {
+            if (IsUnitCollisionDetected(this, unit))
+            {
+                collidingUnits.Add(unit);
+            }
+        }
+        return collidingUnits;
+    }
+
+
+    void ResolveUnitCollisions(Unit thisUnit, Unit thatUnit)
+    {
+        Vector2 thisUnitPosition = new Vector2(thisUnit.transform.position.x, thisUnit.transform.position.z);
+        Vector2 thatUnitPosition = new Vector2(thatUnit.transform.position.x, thatUnit.transform.position.z);
+        Vector2 targetPosition = new Vector2(targetPoint.x, targetPoint.z);
+        float overlap = (thisUnit.unitRadius + thatUnit.unitRadius) - (Vector2.Distance(thisUnitPosition, thatUnitPosition));
+
+        Vector2 travelDirection = (targetPosition - thisUnitPosition).normalized;
+        // toOtherUnit is a vector between the two units containing distance and direction
+        Vector2 toOtherUnit = (thatUnitPosition - thisUnitPosition);
+        Vector2 perpendicularTravelDirection = new Vector2(-travelDirection.y, travelDirection.x);
+        float opposite = Vector2.Dot(toOtherUnit, perpendicularTravelDirection);
+        float angle = Mathf.Asin(opposite / toOtherUnit.magnitude);
+
+        float thisUnitSpeedShare;
+        float thatUnitSpeedShare;
+
+        if (thatUnit.unitState == Unit.UnitState.Idle)
+        {
+            thisUnitSpeedShare = 0f;
+            thatUnitSpeedShare = 1f;
+        }
+        else
+        {
+
+            float totalSpeed = thisUnit.moveSpeed + thatUnit.moveSpeed;
+
+            if (totalSpeed <= 0f)
+            {
+                return;
+            }
+
+            thisUnitSpeedShare = thisUnit.moveSpeed / totalSpeed;
+            thatUnitSpeedShare = thatUnit.moveSpeed / totalSpeed;
+
+        }
+
+        float thisUnitCorrection = overlap * thisUnitSpeedShare;
+        float thatUnitCorrection = overlap * thatUnitSpeedShare;
+
+        Vector2 thisUnitDeflectionDirection = -Mathf.Sign(opposite) * perpendicularTravelDirection;
+        Vector2 thatUnitDeflectionDirection = -thisUnitDeflectionDirection;
+
+        Vector2 thisUnitNewPosition = thisUnitPosition + thisUnitDeflectionDirection * thisUnitCorrection;
+
+        Vector2 thatUnitNewPosition = thatUnitPosition + thatUnitDeflectionDirection * thatUnitCorrection;
+
+        thisUnit.transform.position = new Vector3(
+            thisUnitNewPosition.x,
+            thisUnit.transform.position.y,
+            thisUnitNewPosition.y
+        );
+
+        thatUnit.transform.position = new Vector3(
+            thatUnitNewPosition.x,
+            thatUnit.transform.position.y,
+            thatUnitNewPosition.y
+        );
     }
 }

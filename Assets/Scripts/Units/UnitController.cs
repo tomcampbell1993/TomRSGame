@@ -24,8 +24,7 @@ public class UnitController : MonoBehaviour
         Tile targetTile = tileController.GetTile(xPosition, zPosition);
 
         Unit unitScript = unit.GetComponent<Unit>();
-        unitScript.Initialize(this, unitType);
-        unitScript.currentTile = targetTile;
+        unitScript.Initialize(this, unitType, targetTile, 0.25f);
         unit.transform.position = targetTile.transform.position + Vector3.up;
         units.Add(unit);
     }
